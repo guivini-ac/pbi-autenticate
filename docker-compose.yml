@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  powerbi-portal:
+    image: powerbi-portal:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET:-powerbi-portal-secret-key-2025}
+      - PORT=8000
+    volumes:
+      - powerbi_data:/app/backend/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  powerbi_data:
